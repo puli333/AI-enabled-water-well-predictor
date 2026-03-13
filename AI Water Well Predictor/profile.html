@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | AI Water Well Predictor</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        * { transition: all 0.3s ease; }
+        body { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh; 
+            padding: 2rem; 
+        }
+        .profile-card { 
+            background: white; 
+            border-radius: 20px; 
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3); 
+            padding: 2.5rem; 
+            animation: fadeInUp 0.6s ease-out;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .profile-picture {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid #667eea;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            background: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af;
+            font-size: 3rem;
+        }
+        .profile-picture:hover {
+            transform: scale(1.05);
+            border-color: #764ba2;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+        }
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.5);
+        }
+        
+        /* Toast Notifications */
+        .toast-notification {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 10px;
+            min-width: 300px;
+            max-width: 400px;
+            opacity: 0;
+            transform: translateX(400px);
+            transition: all 0.3s ease;
+            border-left: 4px solid #667eea;
+        }
+        
+        .toast-notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .toast-success {
+            border-left-color: #10b981;
+        }
+        
+        .toast-error {
+            border-left-color: #ef4444;
+        }
+        
+        .toast-warning {
+            border-left-color: #f59e0b;
+        }
+        
+        .toast-info {
+            border-left-color: #3b82f6;
+        }
+        
+        .toast-content {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 500;
+            color: #1f2937;
+        }
+        
+        .toast-content i {
+            font-size: 1.25rem;
+        }
+        
+        .toast-success .toast-content i {
+            color: #10b981;
+        }
+        
+        .toast-error .toast-content i {
+            color: #ef4444;
+        }
+        
+        .toast-warning .toast-content i {
+            color: #f59e0b;
+        }
+        
+        .toast-info .toast-content i {
+            color: #3b82f6;
+        }
+        
+        @media (max-width: 768px) {
+            .profile-card {
+                padding: 1.5rem;
+            }
+            
+            .toast-notification {
+                min-width: 250px;
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="profile-card">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="mb-2"><i class="fas fa-user-circle text-primary"></i> My Profile</h1>
+                    <p class="text-muted mb-0">View your account information</p>
+                </div>
+                <div>
+                    <a href="/index.html" class="btn btn-outline-primary me-2">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                    <button onclick="logout()" class="btn btn-outline-danger">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+            
+            <div id="alert-container"></div>
+            
+            <div class="row">
+                <div class="col-md-4 text-center mb-4">
+                    <div class="position-relative d-inline-block">
+                        <div id="profile-picture-container" class="profile-picture">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <img id="profile-picture-img" src="" alt="Profile Picture" style="display: none; width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 5px solid #667eea;">
+                    </div>
+                </div>
+                
+                <div class="col-md-8">
+                    <div class="profile-info">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold"><i class="fas fa-user"></i> Username</label>
+                            <input type="text" id="username" class="form-control" readonly style="background-color: #f3f4f6;">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold"><i class="fas fa-envelope"></i> Email</label>
+                            <input type="text" id="email" class="form-control" readonly style="background-color: #f3f4f6;">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold"><i class="fas fa-map-marker-alt"></i> Locality</label>
+                            <input type="text" id="locality" class="form-control" readonly style="background-color: #f3f4f6;">
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold"><i class="fas fa-calendar-plus"></i> Account Created</label>
+                                <input type="text" id="created-at" class="form-control" readonly style="background-color: #f3f4f6;">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold"><i class="fas fa-clock"></i> Last Login</label>
+                                <input type="text" id="last-login" class="form-control" readonly style="background-color: #f3f4f6;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Toast notification system
+        function showToast(message, type = 'info') {
+            const toastContainer = document.getElementById('toast-container') || createToastContainer();
+            const toast = document.createElement('div');
+            toast.className = `toast-notification toast-${type}`;
+            toast.innerHTML = `
+                <div class="toast-content">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            toastContainer.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+        
+        function createToastContainer() {
+            const container = document.createElement('div');
+            container.id = 'toast-container';
+            container.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px;';
+            document.body.appendChild(container);
+            return container;
+        }
+        
+        async function loadProfile() {
+            try {
+                const response = await fetch('/profile', { credentials: 'include' });
+                if (response.status === 401) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+                const data = await response.json();
+                if (data.success) {
+                    const profile = data.profile;
+                    document.getElementById('username').value = profile.username;
+                    document.getElementById('email').value = profile.email || '';
+                    document.getElementById('locality').value = profile.locality || '';
+                    document.getElementById('created-at').value = profile.created_at || 'N/A';
+                    document.getElementById('last-login').value = profile.last_login || 'Never';
+                    
+                    if (profile.profile_picture) {
+                        const img = document.getElementById('profile-picture-img');
+                        img.src = profile.profile_picture;
+                        img.style.display = 'block';
+                        document.getElementById('profile-picture-container').style.display = 'none';
+                    }
+                } else {
+                    showToast(data.error || 'Failed to load profile', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                showToast('Error loading profile. Please refresh the page.', 'error');
+            }
+        }
+        
+        // Load profile on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProfile();
+        });
+        
+        function showAlert(message, type = 'danger') {
+            const alertContainer = document.getElementById('alert-container');
+            const alertClass = type === 'success' ? 'alert-success' : type === 'info' ? 'alert-info' : 'alert-danger';
+            const icon = type === 'success' ? 'check-circle' : type === 'info' ? 'info-circle' : 'exclamation-triangle';
+            
+            alertContainer.innerHTML = `
+                <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                    <i class="fas fa-${icon} me-2"></i>
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+        }
+        
+        async function logout() {
+            try {
+                await fetch('/logout', { method: 'POST', credentials: 'include' });
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+            window.location.href = '/login.html';
+        }
+        
+        // Load profile on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProfile();
+        });
+    </script>
+</body>
+</html>
+
